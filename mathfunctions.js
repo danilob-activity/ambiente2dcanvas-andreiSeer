@@ -69,6 +69,18 @@ function multVec(A, b) { //multiplicação de uma matriz (3x3) e um vetor
     }
     return C; //retorna um vetor
 }
+function transformUsual(Width,Height){
+
+
+    return [
+        [1,   0,    -Width / 2.],
+        [0,  -1,    Height / 2.],
+        [0,   0,              1]
+    ];
+
+
+
+}
 
 function calcDeterminantTriangle(p0, p1, p2) {
     //ToDO: nesta função realize o cálculo da area do triangulo utilizando determinante
@@ -84,4 +96,34 @@ function calcDeterminantTriangle(p0, p1, p2) {
 
     if (area < 0) return -area;
     return area;
+}
+
+function inverseScale(S){
+
+     return [
+        [1/S[0][0], 0, 0],
+        [0, 1/S[1][1], 0],
+        [0, 0, 1]
+    ]; //retorna matriz 3x3
+
+
+
+}
+function inverseTranslate(T){
+     return [
+        [1, 0, -T[0][2]],
+        [0, 1, -T[1][2]],
+        [0, 0,        1]
+    ]; //retorna matriz 3x3
+
+
+}
+function inverseRotate(R){
+     //transforma theta em ratianos
+    return [
+        [R[0][0], -R[0][1], 0],
+        [-R[1][0], R[1][1], 0],
+        [0, 0, 1]
+    ]; //retorna matriz 3x3
+
 }

@@ -32,11 +32,27 @@ Box.prototype.setRotate = function(theta) {
     this.R = rotate(theta);
 }
 
-
 Box.prototype.setScale = function(x, y) {
+ 
     this.S = scale(x, y);
 }
+////////////////////////////////////////////////////////////
+Box.prototype.getinvRotate = function() {
+    return inverseRotate(this.R);}
+Box.prototype.getinvTranslate = function() {
+    return inverseTranslate(this.T);
+}
 
+Box.prototype.getinvScale = function() {
+    return inverseScale(this.S);
+}
+///////////////////////////////////////////////////////////////
+Box.prototype.setFill = function(fill) {
+    this.fill = fill;
+}
+Box.prototype.setStroke = function(stroke) {
+    this.stroke = stroke;
+}
 Box.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     //pega matriz de tranformação de coordenadas canônicas para coordenadas do canvas
     var M = transformCanvas(WIDTH, HEIGHT);
@@ -69,7 +85,29 @@ Box.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     var center = multVec(Mg, this.center);
     canv.fillText(this.name, center[0] - this.name.length * 16 / 3, center[1] + 3); //deixa o texto mais ou menos centralizado no meio da caixa
 }
+Box.prototype.tryIntersection = function(coord){
+    var inR = this.getinvRotate();
+    var inS = this.getinvScale();
+    var inT = this.getinvTranslate();
+    var Mg = mult(mult(inS ,inR ),inT); 
+    var pL = multVec(Mg,coord);
 
+    var points = [];
+    points.push([this.center[0]+this.width/2,this.center[1]+this.height/2,1]);
+    points.push([this.center[0]-this.width/2,this.center[1]+this.height/2,1]);
+    points.push([this.center[0]-this.width/2,this.center[1]-this.height/2,1]);
+    points.push([this.center[0]+this.width/2,this.center[1]-this.height/2,1]);
+
+    if(pL[0] >= points[1][0] && pL[0] <= points[0][0]){
+        if(pL[1]>=points[2][1] && pL[1]<=points[1][1]){
+            console.log("Houve Interseção!");
+            return true;
+        }
+    }
+
+    console.log("Não houve Interseção");
+    return false;
+}
 
 function Circle(center = [0, 0, 1], radius = 50) {
     this.center = center;
@@ -110,7 +148,21 @@ Circle.prototype.setRadius = function(r) {
 Circle.prototype.setFill = function(fill) {
     this.fill = fill;
 }
+Circle.prototype.setStroke = function(stroke) {
+    this.stroke = stroke;
+}
+////////////////////////////////////////////////////////////
 
+Circle.prototype.getinvRotate = function() {
+    return inverseRotate(this.R);}
+Circle.prototype.getinvTranslate = function() {
+    return inverseTranslate(this.T);
+}
+
+Circle.prototype.getinvScale = function() {
+    return inverseScale(this.S);
+}
+///////////////////////////////////////////////////////////////
 Circle.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     //pega matriz de tranformação de coordenadas canônicas para coordenadas do canvas
     var M = transformCanvas(WIDTH, HEIGHT);
@@ -141,4 +193,25 @@ Circle.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     canv.font = "16px Courier";
     var center = multVec(Mg, this.center);
     canv.fillText(this.name, center[0] - this.name.length * 16 / 3, center[1] + 3); //deixa o texto mais ou menos centralizado no meio da caixa
+}
+Circle.prototype.tryIntersection = function(coord){
+    var inR = this.getinvRotate();
+    var inS = this.getinvScale();
+    var inT = this.getinvTranslate();
+
+    var Mg = mult(mult(inS ,inR ),inT); 
+    var pL = multVec(Mg,coord);
+
+    var points = [];
+    x = Math.pow(pL[0]-  this.center[0],2);
+    y = Math.pow(pL[1]- this.center[1],2);
+    
+    d = Math.sqrt(x+y);
+    
+
+    if(d<=this.radius){return true;}
+    
+
+   
+    return false;
 }
